@@ -8,9 +8,18 @@ export default function Home() {
         <title>Bem vindo a Board! - Organizando suas tarefas.</title>
         <meta name="description" content="Bem vindo ao app que organiza suas tarefas do dia a dia" />
       </Head>
-      <div>
-        <h1 className={S.title}>Bem vindo ao projeto <span>Board</span>!</h1>
-      </div>
+      <main className={S.contentContainer}>
+        <img src="/img/board-user.svg" alt="Ferramenta board" />
+
+        <section className={S.callToAction}>
+          <h1>Uma ferramenta para seu dia a dia Escreva, planeje e organize-se...</h1>
+          <p><span>100% Gratuita</span> e online.</p>
+        </section>
+
+        <div className={S.donaters}>
+          <img src="/img/steve.png" alt="Usuario 1" />
+        </div>
+      </main>
     </>
   )
 }
