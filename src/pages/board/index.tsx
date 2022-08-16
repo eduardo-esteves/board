@@ -1,13 +1,44 @@
+import React, {FormEvent} from 'react'
 import Head from 'next/head'
 import { GetServerSideProps } from 'next'
 import { getSession } from 'next-auth/react'
 
 import { FiPlus, FiCalendar, FiEdit2, FiTrash, FiClock } from 'react-icons/fi'
 import SupportButton from '../../components/SupportButton'
+import { default as connection } from '../../services/firebaseConnection'
+import { addDoc, collection, getFirestore } from 'firebase/firestore'
 
 import S from './styles.module.scss'
 
-const Board = () => {
+
+interface BoardProps {
+  user: {
+    id: string;
+    name: string;
+  }
+}
+
+const Board = ({ user }: BoardProps) => {
+  const [ task, setTask ] = React.useState('')
+
+  const db = getFirestore(connection)
+
+  const handleAddTask = async (e: FormEvent) => {
+    e.preventDefault()
+
+    try {
+      const docRef = await addDoc(collection(db, 'tarefas'), {
+        created: new Date(),
+        tarefa: task,
+        userId: user.id,
+        nome: user.name
+      })
+      console.log("Document written with ID: ", docRef.id)
+    } catch(e) {
+      console.error("Error adding document: ", e)
+    }
+  }
+
   return (
     <>
       <Head>
@@ -15,10 +46,12 @@ const Board = () => {
         <meta name="description" content="O Board organiza suas tarefas do dia a dia" />
       </Head>
       <main className={S.container}>
-        <form>
+        <form onSubmit={handleAddTask}>
           <input
             type="text"
             placeholder="Digite sua tarefa..."
+            value={task}
+            onChange={ ({target}) => setTask(target.value)}
           />
 
           <button type="submit">
@@ -83,9 +116,14 @@ export const getServerSideProps: GetServerSideProps = async ({ req }) => {
     }
   }
 
+  const user = {
+    id: session.id,
+    name: session.user.name,
+  }
+
   return {
     props: {
-
+      user
     }
   }
 
